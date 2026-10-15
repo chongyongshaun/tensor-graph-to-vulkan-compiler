@@ -1,0 +1,268 @@
+{
+  "schema_version": "1.0.0",
+  "matrix_version": "mvp-1",
+  "status": "frozen",
+  "frozen_by": "TF-002",
+  "title": "TGVC MVP operator capability table",
+  "dtypes": {
+    "supported": ["float32"],
+    "rejected": [
+      "float16",
+      "bfloat16",
+      "float64",
+      "int8",
+      "int16",
+      "int32",
+      "int64",
+      "bool",
+      "quantized"
+    ],
+    "promotion": "none",
+    "mixed_dtype": "rejected"
+  },
+  "shape_policy": {
+    "kind": "static_ranked",
+    "rank": { "min": 1, "max": 4 },
+    "dim": {
+      "kind": "positive_integer_literal",
+      "dynamic": "rejected",
+      "symbolic": "rejected",
+      "zero_sized": "rejected"
+    },
+    "max_elements_per_tensor": 16777216
+  },
+  "elementwise_policy": {
+    "broadcasting": "rejected",
+    "shape_rule": "identical_shapes_only"
+  },
+  "operators": [
+    {
+      "name": "Constant",
+      "category": "leaf",
+      "status": "core",
+      "arity": { "inputs": 0, "outputs": 1 },
+      "shape_rule": "shape_from_attribute",
+      "rank_rule": "1..4",
+      "dtype_rule": "literal_and_output_float32",
+      "attributes": ["value", "shape"],
+      "constraints": {
+        "shape": "static_positive",
+        "literal_element_count": "equals_shape_product"
+      },
+      "rejected_when": [
+        "missing_shape_attribute",
+        "literal_count_mismatch",
+        "non_float32_literal",
+        "rank_out_of_range",
+        "dynamic_dimension",
+        "unexpected_attribute"
+      ]
+    },
+    {
+      "name": "Add",
+      "category": "elementwise_binary",
+      "status": "core",
+      "arity": { "inputs": 2, "outputs": 1 },
+      "shape_rule": "identical_shapes_only",
+      "rank_rule": "1..4",
+      "dtype_rule": "all_operands_float32",
+      "attributes": [],
+      "constraints": {
+        "broadcasting": "rejected",
+        "shape_equality": "all_dimensions"
+      },
+      "rejected_when": [
+        "operand_shapes_differ",
+        "broadcast_required",
+        "non_float32_operand",
+        "rank_out_of_range",
+        "dynamic_dimension",
+        "unexpected_attribute"
+      ]
+    },
+    {
+      "name": "Mul",
+      "category": "elementwise_binary",
+      "status": "core",
+      "arity": { "inputs": 2, "outputs": 1 },
+      "shape_rule": "identical_shapes_only",
+      "rank_rule": "1..4",
+      "dtype_rule": "all_operands_float32",
+      "attributes": [],
+      "constraints": {
+        "broadcasting": "rejected",
+        "shape_equality": "all_dimensions"
+      },
+      "rejected_when": [
+        "operand_shapes_differ",
+        "broadcast_required",
+        "non_float32_operand",
+        "rank_out_of_range",
+        "dynamic_dimension",
+        "unexpected_attribute"
+      ]
+    },
+    {
+      "name": "ReLU",
+      "category": "elementwise_unary",
+      "status": "core",
+      "arity": { "inputs": 1, "outputs": 1 },
+      "shape_rule": "same_shape_as_input",
+      "rank_rule": "1..4",
+      "dtype_rule": "operand_and_output_float32",
+      "attributes": [],
+      "constraints": {
+        "shape_equality": "input_output"
+      },
+      "rejected_when": [
+        "non_float32_operand",
+        "rank_out_of_range",
+        "dynamic_dimension",
+        "unexpected_attribute"
+      ]
+    },
+    {
+      "name": "MatMul",
+      "category": "contraction",
+      "status": "core",
+      "arity": { "inputs": 2, "outputs": 1 },
+      "shape_rule": "inner_dimensions_equal",
+      "rank_rule": "2",
+      "dtype_rule": "all_operands_float32",
+      "attributes": [],
+      "constraints": {
+        "operand_rank": 2,
+        "k_dimensions_equal": true,
+        "result_rank": 2
+      },
+      "rejected_when": [
+        "operand_rank_not_two",
+        "inner_dimensions_differ",
+        "non_float32_operand",
+        "dynamic_dimension",
+        "unexpected_attribute"
+      ]
+    },
+    {
+      "name": "Reshape",
+      "category": "structural",
+      "status": "core",
+      "arity": { "inputs": 1, "outputs": 1 },
+      "shape_rule": "element_count_preserved",
+      "rank_rule": "1..4",
+      "dtype_rule": "operand_and_result_float32",
+      "attributes": ["shape"],
+      "constraints": {
+        "max_inferred_dims": 1,
+        "inferred_dim_sentinel": -1,
+        "other_dims": "static_positive",
+        "element_count": "preserved"
+      },
+      "rejected_when": [
+        "element_count_changed",
+        "more_than_one_inferred_dim",
+        "non_positive_dimension",
+        "result_rank_out_of_range",
+        "dynamic_dimension",
+        "unexpected_attribute"
+      ]
+    },
+    {
+      "name": "Transpose",
+      "category": "structural",
+      "status": "core",
+      "arity": { "inputs": 1, "outputs": 1 },
+      "shape_rule": "complete_unique_permutation",
+      "rank_rule": "1..4",
+      "dtype_rule": "operand_and_result_float32",
+      "attributes": ["perm"],
+      "constraints": {
+        "perm_length_equals_rank": true,
+        "perm_unique": true,
+        "perm_range": "0..rank-1"
+      },
+      "rejected_when": [
+        "perm_length_mismatch",
+        "duplicate_permutation_entry",
+        "permutation_index_out_of_range",
+        "rank_out_of_range",
+        "dynamic_dimension",
+        "unexpected_attribute"
+      ]
+    }
+  ],
+  "rejection_taxonomy": [
+    {
+      "reason": "unsupported_operator",
+      "example": "node operation \"Conv\" is outside the MVP operator set",
+      "enforced_by": "TF-016 canonical JSON importer; diagnostic codes in TF-028"
+    },
+    {
+      "reason": "unsupported_dtype",
+      "example": "tensor element type \"float16\"",
+      "enforced_by": "TF-016 schema validation; TF-015 shape inference"
+    },
+    {
+      "reason": "unsupported_rank",
+      "example": "tensor rank 5 exceeds the frozen maximum of 4",
+      "enforced_by": "TF-015 shape inference"
+    },
+    {
+      "reason": "dynamic_dimension",
+      "example": "dimension \"N\" or null instead of a positive integer literal",
+      "enforced_by": "TF-016 importer; TF-026 restricted ONNX filter"
+    },
+    {
+      "reason": "unsupported_attribute",
+      "example": "Add node carrying an \"axis\" attribute",
+      "enforced_by": "TF-014 operator verifiers"
+    },
+    {
+      "reason": "malformed_graph",
+      "example": "duplicate tensor name, missing input, elementwise shape mismatch, or a non-positive dimension",
+      "enforced_by": "TF-016 schema validation; TF-015 verifiers"
+    }
+  ],
+  "non_goals": [
+    "dynamic_shapes",
+    "control_flow",
+    "training",
+    "autodiff",
+    "full_onnx",
+    "graphics",
+    "proprietary_targets",
+    "multi_device",
+    "quantization",
+    "production_driver_integration"
+  ],
+  "target": {
+    "api": "vulkan_compute",
+    "ir": "spirv",
+    "devices": 1,
+    "compute_queues": 1,
+    "dispatch": "sequential"
+  },
+  "frontends": {
+    "canonical_json": { "tier": "MUST", "owner": "TF-016" },
+    "restricted_onnx": { "tier": "SHOULD", "cuttable": true, "owner": "TF-026" }
+  },
+  "deferred_decisions": [
+    { "topic": "numeric tolerance policy", "owner": "TF-025 policy, TF-072 final specification" },
+    { "topic": "diagnostic code catalog", "owner": "TF-028" },
+    { "topic": "per-operator deep semantics and negative tests", "owner": "TF-013 and TF-014" },
+    { "topic": "shape inference and verifier enforcement", "owner": "TF-015" },
+    { "topic": "canonical JSON graph schema", "owner": "TF-016" },
+    { "topic": "restricted ONNX subset breadth", "owner": "TF-026" },
+    { "topic": "formal minimum, target and stretch cut lines", "owner": "TF-005" },
+    { "topic": "Vulkan API, SPIR-V version and ABI", "owner": "TF-004" },
+    { "topic": "source layout, MLIR integration and CI", "owner": "TF-006, TF-007 and TF-009" }
+  ],
+  "consumers": [
+    "TF-015 conformance table tests",
+    "TF-016 canonical JSON importer and schemas/tgvc-graph-v1.json",
+    "TF-024 CPU reference interpreter",
+    "TF-026 restricted ONNX validator",
+    "TF-028 diagnostic code catalog"
+  ],
+  "reproducible_check": "cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug && cmake --build build -j && ctest --test-dir build --output-on-failure"
+}
