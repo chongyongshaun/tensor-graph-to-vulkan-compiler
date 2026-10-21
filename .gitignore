@@ -1,5 +1,153 @@
-# Build output
+# TGVC ignore rules.
+#
+# Curated from https://www.toptal.com/developers/gitignore for the templates
+# macos,linux,windows,c++,c,python,latex,cmake. The generated file was trimmed of
+# entries that do not apply here and of entries that would hide real sources in
+# this repository: notably Python packaging rules for lib/, dist/ and var/, where
+# lib/ would otherwise ignore the C++ sources planned under lib/Dialect.
+# Generated build output for this project is listed first.
+
+# --- Build output -----------------------------------------------------------
 build/
+build-*/
 cmake-build-*/
+
+# --- CMake ------------------------------------------------------------------
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+cmake_install.cmake
+CTestTestfile.cmake
+install_manifest.txt
 compile_commands.json
+CMakeUserPresets.json
+CMakeLists.txt.user
+_deps/
+*-prefix/
+
+# --- C and C++ compiler artifacts -------------------------------------------
+*.o
+*.obj
+*.lo
+*.slo
+*.a
+*.la
+*.lai
+*.lib
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+*.app
+*.out
+*.d
+*.gch
+*.pch
+*.ilk
+*.exp
+*.map
+*.pdb
+*.idb
+*.dSYM/
+*.dSYM.zip
+*.i*86
+*.x86_64
+*.stackdump
+
+# Golden test outputs committed on purpose need an explicit ! rule, because the
+# *.out pattern above also covers compiler and hyperref output.
+
+# --- Python oracle tooling --------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+.hypothesis/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+*.egg-info/
 .cache/
+
+# --- LaTeX (dissertation) ---------------------------------------------------
+*.aux
+*.log
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.pdfsync
+*.synctex
+*.synctex.gz
+*.synctex(busy)
+*.synctex.gz(busy)
+*.dvi
+*.xdv
+*-converted-to.*
+latex.out/
+*.bbl
+*.bcf
+*.blg
+*.run.xml
+*-blx.bib
+*.nav
+*.snm
+*.vrb
+*.idx
+*.ind
+*.ilg
+*.glo
+*.gls
+*.acn
+*.acr
+*.alg
+*.ist
+*.lol
+*.loa
+*.thm
+*.brf
+*.sout
+_minted*
+*.pyg
+*.pytxcode
+pythontex-files-*/
+# Figures and the built dissertation are intentionally not ignored: *.pdf stays
+# trackable so the final report and vector figures can be committed.
+
+# --- macOS ------------------------------------------------------------------
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+.fseventsd
+.TemporaryItems
+.DocumentRevisions-V100
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+*.icloud
+
+# --- Linux ------------------------------------------------------------------
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# --- Windows ----------------------------------------------------------------
+Thumbs.db
+ehthumbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
